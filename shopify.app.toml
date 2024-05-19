@@ -3,7 +3,7 @@
 client_id = "bcb9a17010490bd6be246b395d2dcbef"
 name = "drum-test-app"
 handle = "drum-test-app"
-application_url = "https://wins-solving-ping-soil.trycloudflare.com"
+application_url = "https://thrown-distribute-consumers-crafts.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://wins-solving-ping-soil.trycloudflare.com/auth/callback",
-  "https://wins-solving-ping-soil.trycloudflare.com/auth/shopify/callback",
-  "https://wins-solving-ping-soil.trycloudflare.com/api/auth/callback"
+  "https://thrown-distribute-consumers-crafts.trycloudflare.com/auth/callback",
+  "https://thrown-distribute-consumers-crafts.trycloudflare.com/auth/shopify/callback",
+  "https://thrown-distribute-consumers-crafts.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

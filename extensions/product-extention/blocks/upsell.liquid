@@ -1,0 +1,117 @@
+{% if product.handle == 'the-3p-fulfilled-snowboard' %}
+  {% assign products = block.settings.upsellProducts %}
+
+  <style>
+    .productsContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-height: 350px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .productElem {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      height: 100px;
+      border-bottom: 1px solid black;
+    }
+
+    .productImage {
+      width: 80px;
+      height: 80px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: #000;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <section>
+    <h2>{{ block.settings.sectionTitle }}</h2>
+    <div class="productsContainer" style="padding-top: {{ block.settings.paddingTop }}px; padding-bottom: {{ block.settings.paddingBottom }}px;">
+      {% for product in products %}
+        <div class="productElem">
+          <img class="productImage" src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+          <h5>{{ product.title }}</h5>
+          <p>{{ product.price | money }}</p>
+          
+          {% if block.settings.buyNow %}
+            <form method="post" action="/cart/add" class="add-to-cart-form">
+              <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+              <input type="hidden" name="properties[_upsell]" value="true" />
+              <button type="submit" class="add-to-cart-btn">Add to cart</button>
+            </form>
+          {% else %}
+            <a href="/products/{{ product.handle }}" target="_blank">View Product</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var addToCartForms = document.querySelectorAll('.add-to-cart-form');
+      addToCartForms.forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+          event.preventDefault();
+
+          var button = form.querySelector('.add-to-cart-btn');
+          var spinner = document.createElement('span');
+          spinner.classList.add('spinner');
+          button.textContent = '';
+          button.appendChild(spinner);
+
+          var formData = new FormData(form);
+          fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            button.textContent = 'Add to cart';
+            button.removeChild(spinner);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            button.textContent = 'Add to cart';
+            button.removeChild(spinner);
+          });
+        });
+      });
+    });
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Show product",
+  "target": "section",
+  "settings": [
+    { "type": "product_list", "id": "upsellProducts", "label": "products", "limit": 5 },
+    { "type": "text", "id": "sectionTitle", "label": "Section Title", "default": "Recommended for you" },
+    { "type": "checkbox", "id": "buyNow", "label": "Enable 'Buy now' button", "default": true },
+    { "type": "range", "id": "paddingTop", "label": "Top Padding", "default": 20, "min": 0, "max": 100, "unit": "px" },
+    { "type": "range", "id": "paddingBottom", "label": "Bottom Padding", "default": 20, "min": 0, "max": 100, "unit": "px" }
+  ]
+}
+{% endschema %}
