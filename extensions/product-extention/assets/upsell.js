@@ -1,44 +1,33 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const buyNowButtons = document.querySelectorAll(".buy-now-button");
+document.addEventListener('DOMContentLoaded', function() {
+  var addToCartForms = document.querySelectorAll('.add-to-cart-form');
+  addToCartForms.forEach(function(form) {
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
 
-  buyNowButtons.forEach((button) => {
-    button.addEventListener("click", function () {
-      const productId = this.closest(".product-card").dataset.productId;
-      this.classList.add("loading");
-      // Симулюємо додавання продукту в кошик
-      setTimeout(() => {
-        this.classList.remove("loading");
-        alert("Product added to cart");
-        // Можете додати логіку для додавання продукту в кошик тут
-      }, 1000);
+      var button = form.querySelector('.add-to-cart-btn');
+      var spinner = document.createElement('span');
+      spinner.classList.add('spinner');
+      button.textContent = '';
+      button.appendChild(spinner);
+
+      var formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        button.textContent = 'Add to cart';
+        button.removeChild(spinner);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        button.textContent = 'Add to cart';
+        button.removeChild(spinner);
+      });
     });
   });
-
-  const productCards = document.querySelectorAll(".product-card");
-  if (productCards.length > 3) {
-    // Ініціалізація слайдера, якщо продуктів більше 3
-    const swiperContainer = document.createElement("div");
-    swiperContainer.classList.add("swiper-container");
-    const swiperWrapper = document.createElement("div");
-    swiperWrapper.classList.add("swiper-wrapper");
-
-    productCards.forEach((card) => {
-      const swiperSlide = document.createElement("div");
-      swiperSlide.classList.add("swiper-slide");
-      swiperSlide.appendChild(card);
-      swiperWrapper.appendChild(swiperSlide);
-    });
-
-    swiperContainer.appendChild(swiperWrapper);
-    document.querySelector(".products-grid").replaceWith(swiperContainer);
-
-    new Swiper(".swiper-container", {
-      slidesPerView: 3,
-      spaceBetween: 30,
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
-    });
-  }
 });
